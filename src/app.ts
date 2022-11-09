@@ -1,7 +1,16 @@
-import router from "./router";
+import _router from "./router";
 import { AppConfig, Transition } from "./types";
 
 const App = (config: AppConfig, el: HTMLElement) => {
+  const transition: Transition = (to) => mount(to.component(appContext));
+
+  const router = _router(window, config.routes, transition);
+
+  const appContext = {
+    config,
+    router,
+  };
+
   const mount = (component: HTMLElement) => {
     while (el.firstChild) {
       el.removeChild(el.firstChild);
@@ -10,14 +19,7 @@ const App = (config: AppConfig, el: HTMLElement) => {
     el.appendChild(component);
   };
 
-  const transition: Transition = (to) => {
-    // @todo might need a teardown step?
-    // I used to track the currently mounted component
-    // and call teardown on it, but not so much now.
-    mount(to.component());
-  };
-
-  const go = () => router(window, config.routes, transition).start();
+  const go = () => router.start();
 
   return { go };
 };

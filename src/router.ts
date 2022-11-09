@@ -9,27 +9,33 @@ export default function (
   routes: Route[],
   transition: Transition
 ) {
-  const hashChanged = () => {
-    const hash = window.location.hash.substr(1);
-    const route = routes.find(({ path }) => new RegExp(path).exec(hash));
+  const routeChanged = () => {
+    const pathname = window.location.pathname;
+    const route = routes.find(({ path, regex }) =>
+      path
+        ? path === pathname
+        : regex
+        ? new RegExp(regex).exec(pathname)
+        : false
+    );
 
     if (route) {
       transition(route);
     }
   };
 
-  window.onhashchange = hashChanged;
+  window.onpopstate = routeChanged;
 
   return {
-    start: hashChanged,
+    start: routeChanged,
 
     route: (to: string) => {
-      // @todo bit old skool, lets make this a proper path based route instead
-      window.location.hash = "#" + to;
+      window.history.pushState(null, "", to);
+      window.history.go();
     },
 
     parameters: () => {
-      return parameters(window.location.hash.substr(1));
+      return parameters(window.location.pathname);
     },
   };
 }

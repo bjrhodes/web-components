@@ -1,3 +1,4 @@
 {
-    "liveServer.settings.root": "/public"
+    "liveServer.settings.file": "/index.html",
+    "liveServer.settings.root": "/public",
 }
